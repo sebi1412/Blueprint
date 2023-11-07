@@ -45,6 +45,12 @@ blueprint:
         entity:
           domain: climate
           multiple: false
+    bosch_fenster_target:
+      name: Bosch Fenster Modus
+      selector:
+        entity:
+          domain: switch
+          multiple: false
     open_action:
       name: Additional Open Action (Optional)
       description: Action to perform if the door/window sensor is opened (e.g. open
@@ -83,9 +89,9 @@ action:
       entity_id: !input climate_target
       state: heat
     sequence:
-    - service: climate.turn_off
+    - service: switch.turn_on
       target:
-        entity_id: !input climate_target
+        entity_id: !input bosch_fenster_target
     - choose:
       - conditions: '{{ open_action is defined and open_action|length > 0 }}'
         sequence: !input open_action
@@ -98,8 +104,6 @@ action:
     - choose:
       - conditions: '{{ close_action is defined and close_action|length > 0 }}'
         sequence: !input close_action
-    - service: climate.set_hvac_mode
-      data:
-        hvac_mode: heat
+    - service: switch.turn_off
       target:
-        entity_id: !input climate_target
+        entity_id: !input bosch_fenster_target
